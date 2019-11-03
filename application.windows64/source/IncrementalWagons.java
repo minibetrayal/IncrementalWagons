@@ -138,7 +138,7 @@ public void setup() {
   };
 
   textAlign(CENTER, CENTER);
-  //numWagons = 10000000000000l;
+  numWagons = 10000000000000l;
 }
 
 public void draw() {
@@ -189,7 +189,7 @@ public void draw() {
     textSize(15);
     text("Friends", 110, 210);
     textSize(12);
-    text("₩" + floor(friendCost), 110, 255);
+    text("₩" + truncateFull(friendCost), 110, 255);
     if (mouseX > 10 && mouseX < 210 && mouseY > 200 && mouseY < 270) displayFriends();
   }
 
@@ -204,7 +204,7 @@ public void draw() {
     textSize(15);
     text("Servers", 320, 210);
     textSize(12);
-    text("₩" + floor(serverCost), 320, 255);
+    text("₩" + truncateFull(serverCost), 320, 255);
     if (mouseX > 220 && mouseX < 420 && mouseY > 200 && mouseY < 270) displayServers();
   }
 }
@@ -216,7 +216,7 @@ public void displayFriends() {
   fill(0);
   text("Friends", 530, 210);
   textSize(12);
-  double amt = truncate(Math.pow(friendMultiplier, numFriends) * 100);
+  String amt = truncate(Math.pow(friendMultiplier, numFriends) * 100);
   text(amt + "% Speed", 530, 225);
   textSize(10);
   text("Each friend provides a global speed boost to all structures", 430, 215, 200, 70);
@@ -229,7 +229,7 @@ public void displayServers() {
   fill(0);
   text("Servers", 530, 210);
   textSize(12);
-  double amt = truncate(Math.pow(serverMultiplier, numServers) * 100);
+  String amt = truncate(Math.pow(serverMultiplier, numServers) * 100);
   text(amt + "% Productivity", 530, 225);
   textSize(10);
   text("Each server provides a global productivity boost to all structures", 430, 215, 200, 70);
@@ -298,13 +298,21 @@ public void mouseClicked() {
 //  return split("" + number, ".")[0];
 //}
 
-public double truncate(double d) {
+public String truncate(double d) {
   String s = "" + d;
+  if (s.contains("E")) return truncateFull(d);
   int idx = s.indexOf(".");
   s = s.substring(0, idx + 2);
-  return Double.valueOf(s);
+  return s;
 }
 
+public String truncateFull(double d) {
+  String s = "" + (long) d;
+  int idx = s.indexOf(".");
+  println(s);
+  if (idx >= 0) s = s.substring(0, idx);
+  return s;
+}
 class Building {
   double costMultiplier = 1.4f;
 
@@ -329,12 +337,12 @@ class Building {
 
   public long buy() { // returns the amount spent
     if (invisible) return 0;
-    if (numWagons < Math.floor(cost)) return 0;
+    if (numWagons < cost) return 0;
     numBuildings++;
     if (numBuildings == 1) cycleBegin = millis();
     long temp = cost;
     cost *= costMultiplier;
-    return (long) Math.floor(temp);
+    return temp;
   }
 
   public void tick() {
@@ -342,7 +350,7 @@ class Building {
     double time = millis();
     proportion = (time - cycleBegin) / (millisPerCycle / (globalSpeedMultiplier * Math.pow(friendMultiplier, numFriends)));
     if (proportion >= 1) {
-      numWagons += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * Math.floor(proportion) * numBuildings;
+      numWagons += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * (long) Math.floor(proportion) * numBuildings;
       while (proportion >= 1) proportion--;
       cycleBegin = time - proportion * millisPerCycle;
     }
@@ -358,7 +366,7 @@ class Building {
       rect(x, y, 200, 50);
       return;
     }
-    if (numWagons < Math.floor(cost)) fill(50);
+    if (numWagons < cost) fill(50);
     else fill(150);
     rect(x, y, 200, 50);
     tick();
@@ -370,7 +378,7 @@ class Building {
     fill(0);
     textSize(12);
     text(name, x + 100, y + 10);
-    text("₩" + floor(cost), x + 100, y + 30);
+    text("₩" + truncateFull(cost), x + 100, y + 30);
     if (mouseX > x && mouseX < x + 200 && mouseY > y && mouseY < y + 50) display();
   }
 
@@ -445,12 +453,12 @@ class BuildingBuilder {
 
   public long buy() { // returns the amount spent
     if (invisible) return 0;
-    if (numWagons < Math.floor(cost)) return 0;
+    if (numWagons < cost) return 0;
     numBuildings++;
     if (numBuildings == 1) cycleBegin = millis();
-    double temp = cost;
+    long temp = cost;
     cost *= costMultiplier;
-    return (long) Math.floor(temp);
+    return temp;
   }
 
   public void tick() {
@@ -458,7 +466,7 @@ class BuildingBuilder {
     double time = millis();
     proportion = (time - cycleBegin) / (millisPerCycle / (globalSpeedMultiplier * Math.pow(friendMultiplier, numFriends)));
     if (proportion >= 1) {
-      buildings[buildingIndex].numBuildings += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * Math.floor(proportion) * numBuildings;
+      buildings[buildingIndex].numBuildings += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * (long) Math.floor(proportion) * numBuildings;
       while (proportion >= 1) proportion--;
       cycleBegin = time - proportion * millisPerCycle;
     }
@@ -475,7 +483,7 @@ class BuildingBuilder {
       rect(x, y, 200, 50);
       return;
     }
-    if (numWagons < Math.floor(cost)) fill(50);
+    if (numWagons < cost) fill(50);
     else fill(150);
     rect(x, y, 200, 50);
     tick();
@@ -487,7 +495,7 @@ class BuildingBuilder {
     fill(0);
     textSize(12);
     text(name, x + 100, y + 10);
-    text("₩" + floor(cost), x + 100, y + 30);
+    text("₩" + truncateFull(cost), x + 100, y + 30);
     if (mouseX > x && mouseX < x + 200 && mouseY > y && mouseY < y + 50) display();
   }
 
@@ -595,6 +603,14 @@ class Upgrade {
       if (!upgrades[prereq].obtained) visible = false;
     }
     if (!visible) return;
+    if (infinite || name.equals("Endgame")) {
+      for (Upgrade up : upgrades) {
+        if (!up.infinite && !up.obtained && !up.name.equals("Endgame")) {
+          visible = false;
+          return;
+        }
+      }
+    }
     fill(c);
     rect(x, y, 20, 20);
     if (obtained) {
@@ -616,7 +632,7 @@ class Upgrade {
     fill(0);
     text(name, 530, 210);
     textSize(12);
-    text("₩" + cost, 530, 225);
+    text("₩" + truncateFull(cost), 530, 225);
     if (!obtained) {
       text(description, 430, 215, 200, 70);
     } else {

@@ -85,6 +85,14 @@ class Upgrade {
       if (!upgrades[prereq].obtained) visible = false;
     }
     if (!visible) return;
+    if (infinite || name.equals("Endgame")) {
+      for (Upgrade up : upgrades) {
+        if (!up.infinite && !up.obtained && !up.name.equals("Endgame")) {
+          visible = false;
+          return;
+        }
+      }
+    }
     fill(c);
     rect(x, y, 20, 20);
     if (obtained) {
@@ -106,7 +114,7 @@ class Upgrade {
     fill(0);
     text(name, 530, 210);
     textSize(12);
-    text("₩" + cost, 530, 225);
+    text("₩" + truncateFull(cost), 530, 225);
     if (!obtained) {
       text(description, 430, 215, 200, 70);
     } else {

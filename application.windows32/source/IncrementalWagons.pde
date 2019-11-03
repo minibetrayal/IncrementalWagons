@@ -122,7 +122,7 @@ void setup() {
   };
 
   textAlign(CENTER, CENTER);
-  //numWagons = 10000000000000l;
+  numWagons = 10000000000000l;
 }
 
 void draw() {
@@ -173,7 +173,7 @@ void draw() {
     textSize(15);
     text("Friends", 110, 210);
     textSize(12);
-    text("₩" + floor(friendCost), 110, 255);
+    text("₩" + truncateFull(friendCost), 110, 255);
     if (mouseX > 10 && mouseX < 210 && mouseY > 200 && mouseY < 270) displayFriends();
   }
 
@@ -188,7 +188,7 @@ void draw() {
     textSize(15);
     text("Servers", 320, 210);
     textSize(12);
-    text("₩" + floor(serverCost), 320, 255);
+    text("₩" + truncateFull(serverCost), 320, 255);
     if (mouseX > 220 && mouseX < 420 && mouseY > 200 && mouseY < 270) displayServers();
   }
 }
@@ -200,7 +200,7 @@ void displayFriends() {
   fill(0);
   text("Friends", 530, 210);
   textSize(12);
-  double amt = truncate(Math.pow(friendMultiplier, numFriends) * 100);
+  String amt = truncate(Math.pow(friendMultiplier, numFriends) * 100);
   text(amt + "% Speed", 530, 225);
   textSize(10);
   text("Each friend provides a global speed boost to all structures", 430, 215, 200, 70);
@@ -213,7 +213,7 @@ void displayServers() {
   fill(0);
   text("Servers", 530, 210);
   textSize(12);
-  double amt = truncate(Math.pow(serverMultiplier, numServers) * 100);
+  String amt = truncate(Math.pow(serverMultiplier, numServers) * 100);
   text(amt + "% Productivity", 530, 225);
   textSize(10);
   text("Each server provides a global productivity boost to all structures", 430, 215, 200, 70);
@@ -282,9 +282,18 @@ void mouseClicked() {
 //  return split("" + number, ".")[0];
 //}
 
-double truncate(double d) {
+String truncate(double d) {
   String s = "" + d;
+  if (s.contains("E")) return truncateFull(d);
   int idx = s.indexOf(".");
   s = s.substring(0, idx + 2);
-  return Double.valueOf(s);
+  return s;
+}
+
+String truncateFull(double d) {
+  String s = "" + (long) d;
+  int idx = s.indexOf(".");
+  println(s);
+  if (idx >= 0) s = s.substring(0, idx);
+  return s;
 }

@@ -22,12 +22,12 @@ class Building {
 
   long buy() { // returns the amount spent
     if (invisible) return 0;
-    if (numWagons < Math.floor(cost)) return 0;
+    if (numWagons < cost) return 0;
     numBuildings++;
     if (numBuildings == 1) cycleBegin = millis();
     long temp = cost;
     cost *= costMultiplier;
-    return (long) Math.floor(temp);
+    return temp;
   }
 
   void tick() {
@@ -35,7 +35,7 @@ class Building {
     double time = millis();
     proportion = (time - cycleBegin) / (millisPerCycle / (globalSpeedMultiplier * Math.pow(friendMultiplier, numFriends)));
     if (proportion >= 1) {
-      numWagons += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * Math.floor(proportion) * numBuildings;
+      numWagons += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * (long) Math.floor(proportion) * numBuildings;
       while (proportion >= 1) proportion--;
       cycleBegin = time - proportion * millisPerCycle;
     }
@@ -51,7 +51,7 @@ class Building {
       rect(x, y, 200, 50);
       return;
     }
-    if (numWagons < Math.floor(cost)) fill(50);
+    if (numWagons < cost) fill(50);
     else fill(150);
     rect(x, y, 200, 50);
     tick();
@@ -63,7 +63,7 @@ class Building {
     fill(0);
     textSize(12);
     text(name, x + 100, y + 10);
-    text("₩" + floor(cost), x + 100, y + 30);
+    text("₩" + truncateFull(cost), x + 100, y + 30);
     if (mouseX > x && mouseX < x + 200 && mouseY > y && mouseY < y + 50) display();
   }
 
@@ -138,12 +138,12 @@ class BuildingBuilder {
 
   long buy() { // returns the amount spent
     if (invisible) return 0;
-    if (numWagons < Math.floor(cost)) return 0;
+    if (numWagons < cost) return 0;
     numBuildings++;
     if (numBuildings == 1) cycleBegin = millis();
-    double temp = cost;
+    long temp = cost;
     cost *= costMultiplier;
-    return (long) Math.floor(temp);
+    return temp;
   }
 
   void tick() {
@@ -151,7 +151,7 @@ class BuildingBuilder {
     double time = millis();
     proportion = (time - cycleBegin) / (millisPerCycle / (globalSpeedMultiplier * Math.pow(friendMultiplier, numFriends)));
     if (proportion >= 1) {
-      buildings[buildingIndex].numBuildings += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * Math.floor(proportion) * numBuildings;
+      buildings[buildingIndex].numBuildings += craftsPerCycle * globalProductivityMultiplier * Math.pow(serverMultiplier, numServers) * (long) Math.floor(proportion) * numBuildings;
       while (proportion >= 1) proportion--;
       cycleBegin = time - proportion * millisPerCycle;
     }
@@ -168,7 +168,7 @@ class BuildingBuilder {
       rect(x, y, 200, 50);
       return;
     }
-    if (numWagons < Math.floor(cost)) fill(50);
+    if (numWagons < cost) fill(50);
     else fill(150);
     rect(x, y, 200, 50);
     tick();
@@ -180,7 +180,7 @@ class BuildingBuilder {
     fill(0);
     textSize(12);
     text(name, x + 100, y + 10);
-    text("₩" + floor(cost), x + 100, y + 30);
+    text("₩" + truncateFull(cost), x + 100, y + 30);
     if (mouseX > x && mouseX < x + 200 && mouseY > y && mouseY < y + 50) display();
   }
 
